@@ -1,0 +1,20 @@
+from flask import Flask
+from flask_pymongo import PyMongo
+from config.config import Config
+from flask_mail import Mail
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)  
+app.config.from_object(Config)
+mongo = PyMongo(app)  # Povezuje se sa MongoDB korišćenjem MONGO_URI
+mail = Mail(app)      # Inicijalizacija Flask-Mail
+
+def create_app():
+    from controllers.user_controller import user_routes
+    app.register_blueprint(user_routes, url_prefix='/user')
+    return app
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run(debug=True)
