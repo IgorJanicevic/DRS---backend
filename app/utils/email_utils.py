@@ -3,7 +3,7 @@ from app import mail
 from utils.jwttoken import generate_reset_token
 
 
-def send_registration_email(user_email, username):
+def send_registration_email(user_email, username,password):
     html_body = f"""
     <html>
         <head>
@@ -66,6 +66,7 @@ def send_registration_email(user_email, username):
                 <div class="content">
                     <p>We're excited to have you on board. Your account has been successfully created!</p>
                     <p>If you have any questions or need help getting started, don't hesitate to reach out to us.</p>
+                    <p>Your initial password is: {password}</p>
                     <a href="https://dres.example.com" class="button">Get Started</a>
                 </div>
                 <div class="footer">
@@ -160,9 +161,7 @@ def send_first_login_email(administrator_email,username):
                   sender='igorjanicevic33@gmail.com',
                   recipients=[administrator_email])
     msg.html = html_body  # Set the HTML content of the email
-    print("OVDE PROLAZ" + administrator_email)
     mail.send(msg)
-    print("Sta je greska")
 
 def send_reset_email(user):
     token = generate_reset_token(user)

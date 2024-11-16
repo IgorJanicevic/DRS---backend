@@ -4,7 +4,7 @@ from bson.objectid import ObjectId
 class UserRepository:
     @staticmethod
     def get_user_by_id(user_id):
-        return mongo.db.users.find_one({"_id": ObjectId(user_id)})
+        return UserRepository.id_to_string(mongo.db.users.find_one({"_id": ObjectId(user_id)}))
 
     @staticmethod
     def get_user_by_username(username):
@@ -12,7 +12,7 @@ class UserRepository:
 
     @staticmethod
     def get_user_by_email(email):
-        return mongo.db.users.find_one({"email": email})
+        return UserRepository.id_to_string(mongo.db.users.find_one({"email": email}))
     
     @staticmethod
     def get_all_users():
@@ -53,6 +53,9 @@ class UserRepository:
         if not user:
             return None  # Korisnik ne postoji
 
+        if '_id' in data:
+            del data['_id']
+
         result = mongo.db.users.update_one(
             {"_id": ObjectId(user_id)},  
             {"$set": data}
@@ -87,3 +90,8 @@ class UserRepository:
     def delete_user(user_id):
         result = mongo.db.users.delete_one({"_id": ObjectId(user_id)})
         return result.deleted_count > 0
+    
+    @staticmethod
+    def id_to_string(user):
+        user['_id']=str(user['_id'])
+        return user
