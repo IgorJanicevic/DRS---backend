@@ -13,6 +13,17 @@ class PostService:
             return {'message': 'Error with create post.'},400
         
     @staticmethod
+    def update_post(post_id,status):
+        try:
+            result= PostRepository.update_post(post_id,status)
+            if result:
+                return result,200
+            else:
+                return {'message': 'Status cannot be chagned, post not found'},404
+        except:
+            return {'message':'Error with updating status'}  ,500
+        
+    @staticmethod
     def delete_post(post_id):
         try:
             if PostRepository.delete_post(post_id):

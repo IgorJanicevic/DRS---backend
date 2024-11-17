@@ -1,5 +1,6 @@
 from app import mongo
 from bson.objectid import ObjectId
+from datetime import datetime
 
 class PostRepository:
     @staticmethod
@@ -8,24 +9,50 @@ class PostRepository:
     
     @staticmethod
     def create_post(data):
-        return PostRepository.id_to_string(mongo.db.posts.insert_one(data))
+        post_data = {
+            "user_id": data['user_id'],
+            "description": data['description'],
+            "timestamp": datetime.now(),
+            "type": data['type'],
+            "status": "Pending",
+            "image_url": data['image_url']
+        }
+
+        return PostRepository.id_to_string(post_data,mongo.db.posts.insert_one(post_data))
         
 
     @staticmethod
     def get_user_posts(user_id):
-        posts = mongo.db.posts.find({"user_id":user_id})
-        for post in posts:
-            PostRepository.id_to_string(post)
+        posts_cursor = mongo.db.posts.find({"user_id": user_id})
+        posts = []
+        for post in posts_cursor:
+            post = PostRepository.id_to_string(post)
+            posts.append(post)
 
         return posts
-        
-    @staticmethod
-    def get_friends_posts(user_id):
-        return
+
+    # @staticmethod
+    # def get_friends_posts(user_id):
+    #     return Ovu cu kasnije odradi ostale zaboravi na ovu
     
     @staticmethod
     def update_post(post_id,data):
-        return
+        try:
+            object_id = ObjectId(post_id)
+            
+            result = mongo.db.posts.update_one(
+                {"_id": object_id}, 
+                {"$set": data}       
+            )
+            
+            if result.modified_count > 0:
+                updated_post=mongo.db.posts.find_one({'_id':ObjectId(post_id)})
+                updated_post['_id']= str(updated_post['_id'])
+                return updated_post
+            return False
+        except Exception as e:
+            print(f"Error updating post with ID {post_id}: {e}")
+            return False    
     
     @staticmethod
     def delete_post(post_id):
@@ -33,6 +60,9 @@ class PostRepository:
         return result.deleted_count > 0
 
     @staticmethod
-    def id_to_string(data):
-        data['_id']= str(data['_id'])
+    def id_to_string(data,result=False):
+        if result:
+            data['_id']= str(result.inserted_id)
+        else:
+            data['_id']= str(data['_id'])
         return data
