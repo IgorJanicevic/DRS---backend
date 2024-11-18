@@ -33,7 +33,7 @@ class PostRepository:
 
     # @staticmethod
     # def get_friends_posts(user_id):
-    #     return Ovu cu kasnije odradi ostale zaboravi na ovu
+    #     return Ovu cu kasnije odradi
     
     @staticmethod
     def update_post(post_id,data):

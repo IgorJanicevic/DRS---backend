@@ -11,10 +11,9 @@ class User:
         self.username = username
         self.password = password
         self.role = role
-        self.first_login = True  # Inicijalno možeš postaviti na True, ako je potrebno
+        self.first_login = True 
     
     def to_dict(self):
-        # Ova metoda vraća instancu kao dictionary, što MongoDB očekuje
         return {
             "first_name": self.first_name,
             "last_name": self.last_name,
