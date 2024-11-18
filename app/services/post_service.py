@@ -14,6 +14,7 @@ class PostService:
         if post:
             user= UserRepository.get_user_by_id(post['user_id'])
             send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
+            ##posalji adminu na pregled
             return post,201
         else:
             return {'message': 'Error with create post.'},400
@@ -29,6 +30,7 @@ class PostService:
                 elif action=='reject':
                     send_post_rejected_email(user['email'],result)
                     ##Poslati korisniku na ispravku, bilo bi fino da i ovde bude soket
+                    ##Zabeleziti za korisnika da mu je odbijena objava ++
                 return result,200
             else:
                 return {'message': 'Status cannot be chagned, post not found'},404

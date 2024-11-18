@@ -4,15 +4,18 @@ from bson.objectid import ObjectId
 class UserRepository:
     @staticmethod
     def get_user_by_id(user_id):
-        return UserRepository.id_to_string(mongo.db.users.find_one({"_id": ObjectId(user_id)}))
+        user =mongo.db.users.find_one({"_id":ObjectId(user_id)})
+        return user
 
     @staticmethod
     def get_user_by_username(username):
-        return mongo.db.users.find_one({"username": username})
+        user = mongo.db.users.find_one({"username": username})
+        return user
 
     @staticmethod
     def get_user_by_email(email):
-        return UserRepository.id_to_string(mongo.db.users.find_one({"email": email}))
+        user = mongo.db.users.find_one({"email": email})
+        return user
     
     @staticmethod
     def get_all_users():
@@ -42,7 +45,7 @@ class UserRepository:
         }
         
         result = mongo.db.users.insert_one(user)
-        user['_id'] = str(result.inserted_id)  # Konvertovanje ID-a u string za lakoću rada
+        user['_id'] = str(result.inserted_id)
         return user
 
     @staticmethod

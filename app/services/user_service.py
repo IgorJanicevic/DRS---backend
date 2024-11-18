@@ -8,6 +8,7 @@ import random,string,requests
 
 
 class UserService:
+    
 
     @staticmethod
     def get_user_by_id(user_id):
@@ -20,9 +21,9 @@ class UserService:
     @staticmethod
     def register_user(data):
         if UserRepository.get_user_by_username(data['username']):
-            return {"message": "Username already exists."},400
+            return {"message": "Username already exists."},403
         if UserRepository.get_user_by_email(data['email']):
-            return {"message": "Email already exists."},400
+            return {"message": "Email already exists."},403
         
         new_password = UserService.generate_random_password()
         data['password'] = generate_password_hash(new_password)

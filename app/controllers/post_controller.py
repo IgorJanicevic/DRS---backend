@@ -3,7 +3,7 @@ from services.post_service import PostService
 
 post_routes = Blueprint('post_routes',__name__)
 
-@post_routes.route('/',methods=['POST'])
+@post_routes.route('/create',methods=['POST'])
 def create():
     data = request.get_json()
     return PostService.create_post(data)
@@ -21,9 +21,6 @@ def accept_post(post_id):
 def reject_post(post_id):
     result = PostService.update_post(post_id,{'status':'Rejected'},'reject')
     return result
-
-
-
 
 @post_routes.route('/<post_id>',methods=['DELETE'])
 def delete(post_id):
