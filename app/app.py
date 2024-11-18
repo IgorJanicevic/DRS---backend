@@ -14,8 +14,10 @@ mail = Mail(app)      # Inicijalizacija Flask-Mail
 def create_app():
     from controllers.user_controller import user_routes
     from controllers.post_controller import post_routes
+    from controllers.friendship_controller import friendship_routes
     app.register_blueprint(user_routes, url_prefix='/user')
     app.register_blueprint(post_routes,url_prefix='/post')
+    app.register_blueprint(friendship_routes,url_prefix='/friendship')
     return app
 
 if __name__ == '__main__':
