@@ -70,13 +70,13 @@ class PostService:
             posts=[]
             for friend_id in friends_ids:
                 posts += PostService.get_friend_newest_post(friend_id)
-                return {'data':posts},200
+                return posts,200
         except:
             return {'message':'Error with getting friends posts'},500
     
-    #TODOs
     @staticmethod
     def get_friend_newest_post(friend_id):
-        return
+        posts= PostRepository.get_user_posts(friend_id)
+        return posts
 
         

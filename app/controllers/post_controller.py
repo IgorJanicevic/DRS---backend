@@ -29,3 +29,7 @@ def delete(post_id):
 @post_routes.route('/user/<user_id>',methods=['GET'])
 def get_user_posts(user_id):
     return PostService.get_user_posts(user_id)
+
+@post_routes.route('/friends/<user_id>',methods=['GET'])
+def get_friends_posts(user_id):
+    return PostService.get_friends_posts(user_id)

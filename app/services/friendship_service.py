@@ -30,9 +30,9 @@ class FriendshipService:
         try:
             result = FriendshipRepository.get_friends_ids(user_id)
             if result:
-                return result,200
+                return result
             else:
-                return {'message':'Friends not found'},404
+                return None
         except:
             return {'message': 'Error with getting friends'},500
         

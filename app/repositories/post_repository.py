@@ -23,12 +23,12 @@ class PostRepository:
 
     @staticmethod
     def get_user_posts(user_id):
-        posts_cursor = mongo.db.posts.find({"user_id": user_id})
+        posts_cursor = mongo.db.posts.find({"user_id": str(user_id),  "status":'Accepted'}).sort('timestamp',-1)
         posts = []
         for post in posts_cursor:
-            post = PostRepository.id_to_string(post)
-            posts.append(post)
-
+            if post['user_id']==user_id:
+                post['_id'] = str(post['_id'])
+                posts.append(post)
         return posts
 
     # @staticmethod

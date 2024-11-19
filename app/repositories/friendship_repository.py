@@ -40,7 +40,6 @@ class FriendshipRepository:
         if friends2:
             for friend in friends2:
                 friends_ids.append(friend['user_id'])
-        
         return friends_ids
     
     @staticmethod
