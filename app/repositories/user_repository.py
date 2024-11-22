@@ -5,19 +5,22 @@ class UserRepository:
     @staticmethod
     def get_user_by_id(user_id):
         user =mongo.db.users.find_one({"_id":ObjectId(user_id)})
-        user['_id']=str(user['_id'])
+        if user:
+            user['_id']=str(user['_id'])
         return user
 
     @staticmethod
     def get_user_by_username(username):
         user = mongo.db.users.find_one({"username": username})
-        user['_id']=str(user['_id'])
+        if user:
+            user['_id']=str(user['_id'])
         return user
 
     @staticmethod
     def get_user_by_email(email):
         user = mongo.db.users.find_one({"email": email})
-        user['_id']=str(user['_id'])        
+        if user:
+            user['_id']=str(user['_id'])        
         return user
     
     @staticmethod

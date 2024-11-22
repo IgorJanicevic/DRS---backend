@@ -31,6 +31,7 @@ class PostService:
                     send_post_rejected_email(user['email'],result)
                     ##Poslati korisniku na ispravku, bilo bi fino da i ovde bude soket
                     ##Zabeleziti za korisnika da mu je odbijena objava ++
+                    ##Mozda moze i preko notifikacije
                 return result,200
             else:
                 return {'message': 'Status cannot be chagned, post not found'},404

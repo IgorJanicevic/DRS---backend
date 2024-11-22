@@ -1,7 +1,6 @@
 from app import mongo
 from bson.objectid import ObjectId
 from datetime import datetime
-from models.friendship import Friendship
 
 class FriendshipRepository:
     @staticmethod

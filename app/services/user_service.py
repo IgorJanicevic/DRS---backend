@@ -73,7 +73,7 @@ class UserService:
                 return {"message": "Unauthorized access."}, 403
 
         except Exception as e:
-            return {"message": f"Invalid or expired token: {str(e)}"}, 401
+            return {"message": f"Invalid or expired token: {str(e)}"}, 500
 
         updated_user = UserRepository.update_user(user_id, data)
 

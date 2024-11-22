@@ -30,10 +30,6 @@ class PostRepository:
                 post['_id'] = str(post['_id'])
                 posts.append(post)
         return posts
-
-    # @staticmethod
-    # def get_friends_posts(user_id):
-    #     return Ovu cu kasnije odradi
     
     @staticmethod
     def update_post(post_id,data):
