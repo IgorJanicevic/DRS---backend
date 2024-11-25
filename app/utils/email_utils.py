@@ -2,8 +2,101 @@ from flask_mail import Message
 from app import mail
 from utils.jwttoken import generate_reset_token
 
+def send_post_created_email(administrator_email, post, username):
+    try:
+        # Kreiraj naslov i telo emaila
+        subject = f"New Post Created by {username}!"
+        body = f"""
+        Hello Administrator,
 
-def send_registration_email(user_email, username):
+        A new post has been created by the user: {username}.
+        
+        Here are the details of the post:
+        - Description: {post.get('description', 'No description')}
+        - Created At: {post.get('timestamp', 'Unknown time')}
+        - Status: {post.get('status', 'Unknown status')}
+        
+        Please review the post as necessary.
+        
+        Best regards,
+        Your Platform Team
+        """
+        # Kreiraj poruku
+        msg = Message(subject=subject,
+                      sender="igorjanicevic33@gmail.com",  # Tvoja email adresa
+                      recipients=[administrator_email],
+                      body=body)
+
+        # Pošalji email
+        mail.send(msg)
+        return {"message": "Email sent successfully to administrator!"}, 200
+    except Exception as e:
+        return {"message": f"Failed to send email: {str(e)}"}, 500
+    
+def send_post_accepted_email(user_email, post):
+    try:
+        # Kreiraj naslov i telo emaila
+        subject = "Your Post Has Been Accepted!"
+        body = f"""
+        Hi there,
+
+        Your post has been successfully accepted! Here are the details:
+        
+        - Description: {post.get('description', 'No description')}
+        - Created At: {post.get('timestamp', 'Unknown time')}
+        - Status: {post.get('status', 'Accepted')}
+        
+        Thank you for your contribution.
+
+        Best regards,
+        The Team
+        """
+        # Kreiraj poruku
+        msg = Message(subject=subject,
+                      sender="igorjanicevic33@gmail.com",  # Tvoja email adresa
+                      recipients=[user_email],
+                      body=body)
+
+        # Pošaljite email
+        mail.send(msg)
+        return {"message": "Post accepted email sent successfully!"}, 200
+    except Exception as e:
+        return {"message": f"Failed to send email: {str(e)}"}, 500
+
+
+
+def send_post_rejected_email(user_email, post):
+    try:
+        # Kreiraj naslov i telo emaila
+        subject = "Your Post Has Been Rejected"
+        body = f"""
+        Hi there,
+
+        Unfortunately, your post has been rejected. Here are the details:
+        
+        - Description: {post.get('description', 'No description')}
+        - Created At: {post.get('timestamp', 'Unknown time')}
+        - Status: {post.get('status', 'Rejected')}
+        
+        If you have any questions, feel free to reach out.
+
+        Best regards,
+        The Team
+        """
+        # Kreiraj poruku
+        msg = Message(subject=subject,
+                      sender="igorjanicevic33@gmail.com",  # Tvoja email adresa
+                      recipients=[user_email],
+                      body=body)
+
+        # Pošaljite email
+        mail.send(msg)
+        return {"message": "Post rejected email sent successfully!"}, 200
+    except Exception as e:
+        return {"message": f"Failed to send email: {str(e)}"}, 500
+
+
+def send_registration_email(user_email, username,password):
     html_body = f"""
     <html>
         <head>
@@ -66,6 +159,7 @@ def send_registration_email(user_email, username):
                 <div class="content">
                     <p>We're excited to have you on board. Your account has been successfully created!</p>
                     <p>If you have any questions or need help getting started, don't hesitate to reach out to us.</p>
+                    <p>Your initial password is: {password}</p>
                     <a href="https://dres.example.com" class="button">Get Started</a>
                 </div>
                 <div class="footer">
@@ -160,9 +254,7 @@ def send_first_login_email(administrator_email,username):
                   sender='igorjanicevic33@gmail.com',
                   recipients=[administrator_email])
     msg.html = html_body  # Set the HTML content of the email
-    print("OVDE PROLAZ" + administrator_email)
     mail.send(msg)
-    print("Sta je greska")
 
 def send_reset_email(user):
     token = generate_reset_token(user)
