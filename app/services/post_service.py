@@ -1,5 +1,6 @@
 from repositories.post_repository import PostRepository
 from services.friendship_service import FriendshipService
+from services.notification_service import NotificationService
 from repositories.user_repository import UserRepository
 from utils.email_utils import send_post_created_email, send_post_accepted_email,send_post_rejected_email
 from config.config import Config
@@ -29,7 +30,7 @@ class PostService:
                     send_post_accepted_email(user['email'],result)
                 elif action=='reject':
                     send_post_rejected_email(user['email'],result)
-                    ##Poslati korisniku na ispravku, bilo bi fino da i ovde bude soket
+                    NotificationService.create_notification_for_rejected_post(post_id)
                     ##Zabeleziti za korisnika da mu je odbijena objava ++
                     ##Mozda moze i preko notifikacije
                 return result,200

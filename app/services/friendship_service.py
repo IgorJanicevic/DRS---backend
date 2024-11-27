@@ -1,4 +1,5 @@
 from repositories.friendship_repository import FriendshipRepository
+from services.notification_service import NotificationService
 
 
 class FriendshipService:
@@ -10,6 +11,7 @@ class FriendshipService:
                 return {'message': 'Friendship already exist'},403
             else:
                 result= FriendshipRepository.create_friendship(data)
+                NotificationService.create_notification_for_friendship(result)
                 return result,201
         except:
             return {'message': 'Error with creating frienddship'},500
