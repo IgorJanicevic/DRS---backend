@@ -6,7 +6,7 @@ class Notification:
         self.status= status # unread, read, deleted
         self.created_at= created_at
         self.metedate= metadata # id
-
+        
     def to_dict(self):
         return{
             "user_id":self.user_id,

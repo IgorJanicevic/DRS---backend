@@ -26,6 +26,10 @@ class FriendshipRepository:
     def does_friendship_already_exist(data):
         friendship = mongo.db.friendships.find_one({"user_id":data['user_id'],
                                                     "friend_id":data['friend_id']})
+        if friendship != None:
+            return friendship
+        friendship = mongo.db.friendships.find_one({"user_id":data['friend_id'],
+                                                    "friend_id":data['user_id']})
         return friendship
     #Potrebna je optimzacija
     @staticmethod
