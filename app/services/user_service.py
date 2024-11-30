@@ -74,6 +74,8 @@ class UserService:
 
         except Exception as e:
             return {"message": f"Invalid or expired token: {str(e)}"}, 500
+        
+        data['password'] = generate_password_hash(data['password'])
 
         updated_user = UserRepository.update_user(user_id, data)
 
