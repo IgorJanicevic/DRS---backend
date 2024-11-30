@@ -3,6 +3,7 @@ from flask_pymongo import PyMongo
 from config.config import Config
 from flask_mail import Mail
 from flask_cors import CORS
+from flask_socketio import SocketIO
 
 
 app = Flask(__name__)
@@ -10,6 +11,14 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 app.config.from_object(Config)
 mongo = PyMongo(app)  # Povezuje se sa MongoDB korišćenjem MONGO_URI
 mail = Mail(app)      # Inicijalizacija Flask-Mail
+socketio = SocketIO(app,cors_allowed_origins="*")
+
+@socketio.on('connect')
+def test_connect():
+    print("Klijent povezan")
+    socketio.emit("test_event", {"message": "Test poruka"})
+
+
 
 def create_app():
     from controllers.user_controller import user_routes
@@ -24,6 +33,6 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True)
+    socketio.run(app,debug=True,port=5000)
 
 

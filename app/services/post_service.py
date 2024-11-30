@@ -4,6 +4,7 @@ from services.notification_service import NotificationService
 from repositories.user_repository import UserRepository
 from utils.email_utils import send_post_created_email, send_post_accepted_email,send_post_rejected_email
 from config.config import Config
+from app import socketio
 
 
 
@@ -16,6 +17,11 @@ class PostService:
             user= UserRepository.get_user_by_id(post['user_id'])
             send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
             ##posalji adminu na pregled
+            socketio.emit('new_post', data)
+
+            
+            
+            
             return post,201
         else:
             return {'message': 'Error with create post.'},400
@@ -62,6 +68,17 @@ class PostService:
         
 
 
+    @staticmethod
+    def get_pending_posts():
+        try:
+            posts = PostRepository.get_pending_posts()
+            if posts:
+                return posts,200
+            else:
+                return {'message':'Posts not found'},404
+        except:
+            return {'message','Error with getting posts'},500
+            
     #Potrebno je da se ovo optimizuje da se ne pokupe svi postovi svih prijatelja vec npr 10 po 10, da se ne bi opteretilo sve
     #Zamsili da imas 700 prijatelja i da pokupis svaciji novi post
     #Potrebno je da se pokupe novi postovi
