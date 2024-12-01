@@ -34,6 +34,10 @@ def get_user_posts(user_id):
 def get_pending_posts():
     return PostService.get_pending_posts()
 
+@post_routes.route('/<post_id>',methods=['GET'])
+def get_post_by_id(post_id):
+    return PostService.get_post_by_id(post_id)
+
 @post_routes.route('/friends/<user_id>',methods=['GET'])
 def get_friends_posts(user_id):
     return PostService.get_friends_posts(user_id)

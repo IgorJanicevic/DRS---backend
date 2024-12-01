@@ -4,7 +4,8 @@ from services.notification_service import NotificationService
 from repositories.user_repository import UserRepository
 from utils.email_utils import send_post_created_email, send_post_accepted_email,send_post_rejected_email
 from config.config import Config
-from app import socketio
+from app import socketio,connected_users
+from datetime import datetime
 
 
 
@@ -27,6 +28,17 @@ class PostService:
             return {'message': 'Error with create post.'},400
         
     @staticmethod
+    def get_post_by_id(post_id):
+        try:
+            result = PostRepository.get_post_by_id(post_id)
+            if result:
+                return result,200
+            else:
+                return {"message": 'Post not found'},404
+        except:
+                return {"message": 'Error with getting post by id'},500
+        
+    @staticmethod
     def update_post(post_id,status,action=False):
         try:
             result= PostRepository.update_post(post_id,status)
@@ -37,6 +49,19 @@ class PostService:
                 elif action=='reject':
                     send_post_rejected_email(user['email'],result)
                     NotificationService.create_notification_for_rejected_post(post_id)
+                    
+                    # socketio.to(connected_users[str(user['_id'])]).emit('notification', {
+                    #     'user_id': user['_id'],
+                    #     'type': 'post_rejected',
+                    #     'message': f"Objava sa ID {post_id} je odbijena",
+                    #     'status': 'Rejected',
+                    #     'created_at': datetime.utcnow().isoformat(), 
+                    #     'metadata': {
+                    #         'post_id': post_id,
+                    #         'additional_info': 'Ova objava je odbijena iz razloga X'
+                    #     }
+                    # })
+          
                     ##Zabeleziti za korisnika da mu je odbijena objava ++
                     ##Mozda moze i preko notifikacije
                 return result,200

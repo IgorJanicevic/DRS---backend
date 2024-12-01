@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,request
 from flask_pymongo import PyMongo
 from config.config import Config
 from flask_mail import Mail
@@ -13,10 +13,26 @@ mongo = PyMongo(app)  # Povezuje se sa MongoDB korišćenjem MONGO_URI
 mail = Mail(app)      # Inicijalizacija Flask-Mail
 socketio = SocketIO(app,cors_allowed_origins="*")
 
+# Pretpostavlja se da koristite neki oblik sesije ili baze podataka za čuvanje povezivanja
+connected_users = {}
+
 @socketio.on('connect')
-def test_connect():
-    print("Klijent povezan")
-    socketio.emit("test_event", {"message": "Test poruka"})
+def handle_connect():
+    user_id = request.args.get('user_id')  # Dohvatamo user_id iz query parametara
+    if user_id:
+        connected_users[str(user_id)] = request.sid  # Povezujemo user_id sa socket ID-jem
+        print(f"User {user_id} connected with socket ID {request.sid}")
+    else:
+        print("User ID not provided")
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    for user_id, socket_id in connected_users.items():
+        if socket_id == request.sid:
+            del connected_users[user_id]
+            print(f"User {user_id} disconnected")
+            break
+
 
 
 
