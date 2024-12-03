@@ -4,7 +4,7 @@ from services.notification_service import NotificationService
 from repositories.user_repository import UserRepository
 from utils.email_utils import send_post_created_email, send_post_accepted_email,send_post_rejected_email
 from config.config import Config
-from app import socketio,connected_users
+from app import send_post_to_admin
 from datetime import datetime
 
 
@@ -17,9 +17,8 @@ class PostService:
         if post:
             user= UserRepository.get_user_by_id(post['user_id'])
             send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
-            ##posalji adminu na pregled
-            socketio.emit('new_post', data)
 
+            send_post_to_admin(post)
             
             
             
@@ -63,7 +62,6 @@ class PostService:
                     # })
           
                     ##Zabeleziti za korisnika da mu je odbijena objava ++
-                    ##Mozda moze i preko notifikacije
                 return result,200
             else:
                 return {'message': 'Status cannot be chagned, post not found'},404
@@ -111,7 +109,9 @@ class PostService:
     def get_friends_posts(user_id):
         try:
             friends_ids= FriendshipService.get_all_friends_ids(user_id)
-            posts=[]
+            posts= PostService.get_friend_newest_post(user_id)
+            print("BROJ MOJIH:", posts.count)
+            
             for friend_id in friends_ids:
                 posts += PostService.get_friend_newest_post(friend_id)
                 return posts,200
