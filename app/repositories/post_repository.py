@@ -32,6 +32,17 @@ class PostRepository:
         return posts
     
     @staticmethod
+    def get_pending_posts():
+        posts_curosor = mongo.db.posts.find({"status":"Pending"}).sort('timestamp',-1)
+        posts = []
+        for post in posts_curosor:
+            post['_id'] = str(post['_id'])
+            posts.append(post)
+
+        return posts
+    
+
+    @staticmethod
     def update_post(post_id,data):
         try:
             object_id = ObjectId(post_id)
