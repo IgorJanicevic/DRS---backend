@@ -111,5 +111,20 @@ class UserService:
         except Exception as e:
             return {"message": f"Invalid or expired token: {str(e)}"}, 401
         
-    
-    
+    @staticmethod
+    def search_users(query):
+        if not query:
+            return {"message": "Query parameter is missing"}, 400
+
+        try:
+            users = UserRepository.search_users(query)
+            if not users:
+                return {"message": "No users found."}, 404
+
+            # Konverzija ObjectId u string
+            for user in users:
+                user['_id'] = str(user['_id'])
+            
+            return users, 200
+        except Exception as e:
+            return {"message": f"Error during search: {str(e)}"}, 500

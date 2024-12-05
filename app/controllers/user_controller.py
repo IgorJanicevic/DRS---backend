@@ -26,5 +26,7 @@ def get_all_users():
 def get_user_by_id(user_id):
     return UserService.get_user_by_id(user_id)
 
-
-
+@user_routes.route('/search', methods=['GET'])
+def search_users():
+    query = request.args.get('query', '')
+    return UserService.search_users(query)
