@@ -1,62 +1,87 @@
-from flask import Flask,request
+from flask import Flask, request, session
+from flask_session import Session
 from flask_pymongo import PyMongo
 from config.config import Config
 from flask_mail import Mail
 from flask_cors import CORS
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, disconnect,send
 
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 app.config.from_object(Config)
-mongo = PyMongo(app)  # Povezuje se sa MongoDB korišćenjem MONGO_URI
-mail = Mail(app)      # Inicijalizacija Flask-Mail
-socketio = SocketIO(app,cors_allowed_origins="http://localhost:3000")
+app.secret_key = "some_secret_key"  # Postavite tajni ključ za sesije
+app.config['SESSION_TYPE'] = 'filesystem'  # Tip sesije (možete koristiti 'redis' za distribuisane sisteme)
+Session(app)
 
-# Pretpostavlja se da koristite neki oblik sesije ili baze podataka za čuvanje povezivanja
+mongo = PyMongo(app)
+mail = Mail(app)
+socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
+
+# Globalna promenljiva za admin socket
 connected_users = {}
-admin_socket= None
+session_collection = mongo.db.sessions
 
 
 def send_post_to_admin(post):
-    global admin_socket
-    socketio.emit("new_post", post)
-   # print("Poslato je lepo",to=admin_socket)
+    admin_session = session_collection.find_one({"role": "admin"})
+    if admin_session:
+        socketio.emit("new_post", post, room=admin_session["socket_id"])
+        print("Poslato je adminu na pregled: ", admin_session["socket_id"])
+    else:
+        print("Nema povezanog admina za slanje posta.")
+
+
+def notify_clients(message):
+    client_sessions = session_collection.find({"role": {"$ne": "admin"}})
+    for client in client_sessions:
+        socketio.emit("notification", message, room=client["socket_id"])
+        print(f"Poruka poslata klijentu sa id: {client['user_id']}")
+
 
 @socketio.on('connect')
 def handle_connect():
-    global admin_socket
-
-    user_id = request.args.get('user_id')  # Dohvat user_id iz query parametara
-    role = request.args.get('role')        # Dohvat role iz query parametara
+    user_id = request.args.get('user_id')
+    role = request.args.get('role')
 
     if user_id and role != 'admin':
-        connected_users[str(user_id)] = {
-            "socket_id": request.sid,
-            "role": role
-        }
+        # Sačuvaj klijenta u bazi
+        session_collection.update_one(
+            {"user_id": user_id},
+            {"$set": {"socket_id": request.sid, "role": role}},
+            upsert=True
+        )
         print(f"Korisnik sa id: {user_id} i rolom: {role} se uspesno povezao sa socket id: {request.sid}")
     
-    if role == 'admin':
-        admin_socket = request.sid
-        socketio.emit("connect", request.sid ,to=admin_socket)
-        print(f"Admin se uspesno povezao sa socket id: {admin_socket} sa id: {user_id}")
+    elif role == 'admin':
+        # Proveri da li već postoji admin
+        existing_admin = session_collection.find_one({"role": "admin"})
+        if existing_admin:
+            print("Admin je već povezan. Prekidam prethodnu sesiju.")
+            socketio.emit("disconnect", to=existing_admin["socket_id"])  # Diskonektuj starog admina
+            session_collection.delete_one({"role": "admin"})  # Obriši starog admina iz baze
+
+        # Sačuvaj novog admina u bazi
+        session_collection.update_one(
+            {"role": "admin"},
+            {"$set": {"socket_id": request.sid, "user_id": user_id}},
+            upsert=True
+        )
+        print(f"Admin se uspesno povezao sa socket id: {request.sid} sa id: {user_id}")
     else:
-        print(f"Nisu pronađeni potrebni parametri za povezivanje evo admin sokcet {admin_socket}.")
-
-    print(admin_socket)
-
+        print("Nisu pronađeni potrebni parametri za povezivanje.")
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    for user_id, socket_id in connected_users.items():
-        if socket_id == request.sid:
-            del connected_users[user_id]
-            print(f"Korisnik sa id: {user_id} se diskonektovao")
-            break
+    print('Korisnik se odvezao')
 
+    # Pronađi i obriši sesiju korisnika iz baze
+    disconnected_session = session_collection.find_one_and_delete({"socket_id": request.sid})
 
-
+    if disconnected_session:
+        print(f"Korisnik sa id: {disconnected_session.get('user_id')} i rolom: {disconnected_session.get('role')} se diskonektovao.")
+    else:
+        print("Sesija nije pronađena u bazi.")
 
 def create_app():
     from controllers.user_controller import user_routes
@@ -64,12 +89,11 @@ def create_app():
     from controllers.friendship_controller import friendship_routes
     from controllers.notifications_controller import notification_routes
     app.register_blueprint(user_routes, url_prefix='/user')
-    app.register_blueprint(post_routes,url_prefix='/post')
-    app.register_blueprint(friendship_routes,url_prefix='/friendship')
-    app.register_blueprint(notification_routes,url_prefix='/notification')
+    app.register_blueprint(post_routes, url_prefix='/post')
+    app.register_blueprint(friendship_routes, url_prefix='/friendship')
+    app.register_blueprint(notification_routes, url_prefix='/notification')
     return app
 
 if __name__ == '__main__':
     app = create_app()
-    socketio.run(app,debug=True,port=5000)
-
+    socketio.run(app, debug=True, port=5000)
