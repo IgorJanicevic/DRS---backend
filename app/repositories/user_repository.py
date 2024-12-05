@@ -104,3 +104,15 @@ class UserRepository:
     def id_to_string(user):
         user['_id']=str(user['_id'])
         return user
+    
+    from pymongo import MongoClient
+
+    def search_users(query):
+        # Dohvati sve korisnike
+        users = UserRepository.get_all_users()
+        
+        # Filtriraj korisnike koji sadrže 'query' u svom username-u
+        filtered_users = [user for user in users if query.lower() in user.get("username", "").lower()]
+        
+        return filtered_users
+
