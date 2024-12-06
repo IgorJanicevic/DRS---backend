@@ -18,10 +18,20 @@ connected_users = {}
 admin_socket= None
 
 
+@socketio.on('new_post')
 def send_post_to_admin(post):
+<<<<<<< Updated upstream
     global admin_socket
     socketio.emit("new_post", post)
    # print("Poslato je lepo",to=admin_socket)
+=======
+    admin_session = session_collection.find_one({"role": "admin"})
+    if admin_session:
+        socketio.emit("new_post", post, to=admin_session["socket_id"])
+        print("Poslato je adminu na pregled: ", admin_session["socket_id"])
+    else:
+        print("Nema povezanog admina za slanje posta.")
+>>>>>>> Stashed changes
 
 @socketio.on('connect')
 def handle_connect():
