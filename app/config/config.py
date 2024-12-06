@@ -12,3 +12,6 @@ class Config:
     MAIL_USERNAME = 'igorjanicevic33@gmail.com'
     MAIL_PASSWORD = 'qamp lzyf pgxh ljro'
     ADMIN_EMAIL = "igorjanicevic33@gmail.com"
+
+
+    SESSION_TYPE = 'filesystem'

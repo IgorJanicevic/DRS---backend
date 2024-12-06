@@ -16,8 +16,7 @@ class PostService:
         post = PostRepository.create_post(data)
         if post:
             user= UserRepository.get_user_by_id(post['user_id'])
-            send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
-
+            #send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
             send_post_to_admin(post)
             
             
@@ -110,7 +109,6 @@ class PostService:
         try:
             friends_ids= FriendshipService.get_all_friends_ids(user_id)
             posts= PostService.get_friend_newest_post(user_id)
-            print("BROJ MOJIH:", posts.count)
             
             for friend_id in friends_ids:
                 posts += PostService.get_friend_newest_post(friend_id)
