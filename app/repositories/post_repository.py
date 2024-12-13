@@ -11,6 +11,7 @@ class PostRepository:
     def create_post(data):
         post_data = {
             "user_id": data['user_id'],
+            "username": data['username'],
             "description": data['description'],
             "timestamp": datetime.now(),
             "type": data['type'],

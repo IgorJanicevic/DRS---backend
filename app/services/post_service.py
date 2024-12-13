@@ -13,9 +13,10 @@ class PostService:
 
     @staticmethod
     def create_post(data):
+        user= UserRepository.get_user_by_id(data['user_id'])
+        data['username'] = user['username']
         post = PostRepository.create_post(data)
         if post:
-            user= UserRepository.get_user_by_id(post['user_id'])
             #send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
             send_post_to_admin(post)
             
