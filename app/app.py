@@ -7,6 +7,7 @@ from config.config import Config
 from flask_mail import Mail
 from flask_cors import CORS
 from flask_socketio import SocketIO,rooms
+# from socket_implement import SocketImplement
 
 
 app = Flask(__name__)
@@ -18,6 +19,7 @@ Session(app)
 mongo = PyMongo(app)
 mail = Mail(app)
 socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
+# socket_implement = SocketImplement(socketio)
 
 # Globalna promenljiva za admin socket
 admin_socket_id = None
@@ -33,18 +35,17 @@ def handle_connect():
     if role == 'admin':
         admin_socket_id = request.sid
         print(f"Admin connected: {user_id} with socket_id: {admin_socket_id}")
+        # socket_implement.set_admin(admin_socket_id)
+
 
 # Kreiranje objave od strane korisnik
 @app.route('/post/create', methods=['POST'])
 def create_post():
     data = request.get_json()
-
     user =mongo.db.users.find_one({"_id":ObjectId(data['user_id'])})
     if user:
         user['_id']=str(user['_id'])
-
     data['username'] = user['username']
-
 
     post_data = {
                 "user_id": data['user_id'],
@@ -56,16 +57,12 @@ def create_post():
                 "image_url": data['image_url']
             }
 
-
-    # Čuvanje objave u bazi
     ret_val = id_to_string(post_data,mongo.db.posts.insert_one(post_data))    
-    # Ako je admin povezan, emitujemo objavu ka adminu putem SocketIO
-    if admin_socket_id:
+    if ret_val:
         socketio.emit('new_post', ret_val, room=admin_socket_id)
-        return jsonify({"message": "Objava poslata adminu."}), 201
-        
-    else:
-        return jsonify({"message": "Nema povezanog admina."}), 400
+        return ret_val, 201
+    else:    
+        return jsonify({"message": "Error."}), 400
 
 
 @staticmethod
@@ -75,6 +72,7 @@ def id_to_string(data,result=False):
         data['timestamp']= str(data['timestamp'])
     else:
         data['_id']= str(data['_id'])
+
     return data
 
 def create_app():
