@@ -57,9 +57,6 @@ def create_post():
             }
 
 
-
-
-
     # Čuvanje objave u bazi
     ret_val = id_to_string(post_data,mongo.db.posts.insert_one(post_data))    
     # Ako je admin povezan, emitujemo objavu ka adminu putem SocketIO

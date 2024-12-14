@@ -28,4 +28,9 @@ def get_friends(user_id):
     return FriendshipService.get_all_friends_ids(user_id)
 
 
+@friendship_routes.route('/status/<user_id>/<friend_id>', methods=['GET'])
+def get_friend_status(user_id,friend_id):
+    ret_val =  FriendshipService.get_friendship_status(user_id,friend_id)
+    return {'message':ret_val},200
+
         
