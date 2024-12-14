@@ -3,10 +3,7 @@ from services.post_service import PostService
 
 post_routes = Blueprint('post_routes',__name__)
 
-@post_routes.route('/create',methods=['POST'])
-def create():
-    data = request.get_json()
-    return PostService.create_post(data)
+
 
 @post_routes.route('/<post_id>',methods=['PUT'])
 def update(post_id):

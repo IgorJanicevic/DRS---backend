@@ -38,4 +38,22 @@ class FriendshipService:
         except:
             return {'message': 'Error with getting friends'},500
         
+
+    @staticmethod
+    def get_friendship_status(user_id,friend_id):
+        try:
+            result = FriendshipRepository.does_friendship_already_exist({'user_id':user_id,'friend_id':friend_id})
+            if result:
+                if result['status'] == 'Accepted':
+                    return 'Accepted'
+                elif result['status'] == 'Pending':
+                    if result['user_id'] == user_id:
+                        return 'ISentRequest'
+                    else:
+                        return 'Pending'
+            else:
+                return 'None'
+        except:
+            return 'Error'
+
     
