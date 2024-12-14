@@ -47,6 +47,7 @@ class UserRepository:
             "city": data['city'],
             "country": data['country'],
             "role": 'common',
+            "profile_img": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
             "first_login": True
         }
         

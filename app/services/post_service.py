@@ -4,7 +4,6 @@ from services.notification_service import NotificationService
 from repositories.user_repository import UserRepository
 from utils.email_utils import send_post_created_email, send_post_accepted_email,send_post_rejected_email
 from config.config import Config
-from app import send_post_to_admin
 from datetime import datetime
 
 
@@ -18,7 +17,7 @@ class PostService:
         post = PostRepository.create_post(data)
         if post:
             #send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
-            send_post_to_admin(post)
+            #send_post_to_admin(post)
             
             
             

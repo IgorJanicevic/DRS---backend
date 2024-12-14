@@ -43,7 +43,6 @@ class FriendshipService:
     def get_friendship_status(user_id,friend_id):
         try:
             result = FriendshipRepository.does_friendship_already_exist({'user_id':user_id,'friend_id':friend_id})
-            print(result['status'], '  RADI')
             if result:
                 if result['status'] == 'Accepted':
                     return 'Accepted'
