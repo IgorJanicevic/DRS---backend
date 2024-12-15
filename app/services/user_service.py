@@ -1,4 +1,5 @@
 from repositories.user_repository import UserRepository
+from services.friendship_service import FriendshipService
 from utils.email_utils import send_registration_email, send_first_login_email
 from werkzeug.security import generate_password_hash,check_password_hash
 from utils.jwttoken import generate_token,verify_token
@@ -17,6 +18,27 @@ class UserService:
             return user,200
         else:
             return {"message":"User not found"},404
+        
+    @staticmethod
+    def get_suggested_friends(user_id):
+        user = UserRepository.get_user_by_id(user_id)
+        if user:
+            city = user['city']
+            friends_ids = FriendshipService.get_all_friends_ids(user_id)
+            five_suggested_users = UserService.get_five_suggested_users_by_city(city,friends_ids,user_id)
+            return five_suggested_users,200
+        else:
+            return {'message': 'friends not found'}, 404
+        
+    @staticmethod
+    def get_five_suggested_users_by_city(city, friends_ids,user_id):
+        users = UserRepository.get_users_by_city(city, 5,friends_ids,user_id)
+        if not users:
+            users = UserRepository.get_random_users(limit=5)
+        return users
+
+
+            
     
     @staticmethod
     def register_user(data):

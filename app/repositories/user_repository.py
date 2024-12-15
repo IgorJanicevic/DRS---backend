@@ -116,4 +116,47 @@ class UserRepository:
         filtered_users = [user for user in users if query.lower() in user.get("username", "").lower()]
         
         return filtered_users
+    
+    @staticmethod
+    def get_users_by_city(city, limit, exclude_ids, user_id):
+        query = {"city": city}
+
+        # Dodaj izuzete ID-e u query
+        if exclude_ids:
+            query["_id"] = {"$nin": [ObjectId(id_) for id_ in exclude_ids]}
+
+        # Izuzmi trenutnog korisnika
+        if user_id:
+            if "_id" in query:
+                query["_id"]["$nin"].append(ObjectId(user_id))
+            else:
+                query["_id"] = {"$nin": [ObjectId(user_id)]}
+
+        users = mongo.db.users.find(query).limit(limit)
+
+        # Konvertuj ObjectId u string
+        user_list = []
+        for user in users:
+            user['_id'] = str(user['_id'])
+            user_list.append(user)
+
+        return user_list
+
+
+    @staticmethod
+    def get_random_users(limit):
+        users = mongo.db.users.aggregate([
+            {"$sample": {"size": limit}},
+        ])
+
+        # Konvertuj ObjectId u string i sakrij lozinku
+        user_list = []
+        for user in users:
+            user['_id'] = str(user['_id'])
+            if 'password' in user:
+                del user['password']
+            user_list.append(user)
+
+        return user_list
+
 

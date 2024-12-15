@@ -22,6 +22,10 @@ def update(user_id):
 def get_all_users():
     return UserService.get_all_users()
 
+@user_routes.route('/suggested/<user_id>', methods=['GET'])
+def get_suggested_friends(user_id):
+    return UserService.get_suggested_friends(user_id)
+
 @user_routes.route('/<user_id>', methods=['GET'])
 def get_user_by_id(user_id):
     return UserService.get_user_by_id(user_id)
