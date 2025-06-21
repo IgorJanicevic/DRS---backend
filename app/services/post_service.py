@@ -108,7 +108,13 @@ class PostService:
     def get_friends_posts(user_id):
         try:
             friends_ids= FriendshipService.get_all_friends_ids(user_id)
+
             posts= PostService.get_friend_newest_post(user_id)
+            
+            if posts == None and friends_ids ==None:
+                return {'message':'Not found posts'},404
+            elif posts != None and friends_ids == None:
+                return posts,200
             
             for friend_id in friends_ids:
                 posts += PostService.get_friend_newest_post(friend_id)

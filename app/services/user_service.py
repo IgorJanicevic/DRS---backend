@@ -35,10 +35,7 @@ class UserService:
         users = UserRepository.get_users_by_city(city, 5,friends_ids,user_id)
         if not users:
             users = UserRepository.get_random_users(limit=5)
-        return users
-
-
-            
+        return users         
     
     @staticmethod
     def register_user(data):
@@ -61,11 +58,12 @@ class UserService:
     def login_user(data):
         user = UserRepository.get_user_by_username(data['username'])
         if not user:
-            return {'message':"Invalid credentials."},401
+            return {'message':"Invalid credentials"},401
         
         try:
             password_correct = check_password_hash(user['password'], data['password'])
             if not user or not password_correct:
+    
                 return {'message': "Invalid credentials."},401        
 
             if user['first_login']:
