@@ -20,6 +20,14 @@ class UserService:
             return {"message":"User not found"},404
         
     @staticmethod
+    def get_user_by_username(username):
+        user = UserRepository.get_user_by_username(username)
+        if(user):
+            return user,200
+        else:
+            return {"message":"User not found"},404
+        
+    @staticmethod
     def get_suggested_friends(user_id):
         user = UserRepository.get_user_by_id(user_id)
         if user:

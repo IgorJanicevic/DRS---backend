@@ -6,4 +6,4 @@ from flask_socketio import SocketIO
 mongo = PyMongo()
 mail = Mail()
 session = Session()
-socketio = SocketIO(cors_allowed_origins="http://localhost:3000")
+socketio = SocketIO(cors_allowed_origins="*")

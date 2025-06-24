@@ -1,15 +1,13 @@
 from flask import Blueprint,request
 from services.post_service import PostService
-# from socket_implement import socket_instance
 
 post_routes = Blueprint('post_routes',__name__)
 
-# @post_routes.route('/create',methods=['POST'])
-# def create():
-#     data = request.get_json()
-#     ret_val=  PostService.create_post(data)
-#     socket_instance.send_new_post(ret_val)
-#     return ret_val
+@post_routes.route('/create',methods=['POST'])
+def create():
+    data = request.get_json()
+    ret_val=  PostService.create_post(data)
+    return ret_val
 
 @post_routes.route('/<post_id>',methods=['PUT'])
 def update(post_id):

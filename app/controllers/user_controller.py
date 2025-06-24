@@ -30,6 +30,10 @@ def get_suggested_friends(user_id):
 def get_user_by_id(user_id):
     return UserService.get_user_by_id(user_id)
 
+@user_routes.route('/username/<username>', methods=['GET'])
+def get_user_by_username(username):
+    return UserService.get_user_by_username(username)
+
 @user_routes.route('/search', methods=['GET'])
 def search_users():
     query = request.args.get('query', '')

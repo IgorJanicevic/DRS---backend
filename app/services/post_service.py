@@ -3,8 +3,7 @@ from services.friendship_service import FriendshipService
 from services.notification_service import NotificationService
 from repositories.user_repository import UserRepository
 from utils.email_utils import send_post_created_email, send_post_accepted_email,send_post_rejected_email
-from config.config import Config
-from datetime import datetime
+from extensions import socketio
 
 
 
@@ -16,10 +15,11 @@ class PostService:
         data['username'] = user['username']
         post = PostRepository.create_post(data)
         if post:
-            #send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
-            #send_post_to_admin(post)
-            
-            
+            # send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
+
+            post['timestamp'] = post['timestamp'].isoformat()
+            socketio.emit('new_post', post)
+            print(f'Post successfully sent to admin') 
             
             return post,201
         else:
