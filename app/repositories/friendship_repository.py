@@ -30,12 +30,12 @@ class FriendshipRepository:
             return friendship
         friendship = mongo.db.friendships.find_one({"user_id":data['friend_id'],
                                                     "friend_id":data['user_id']})
+        
         return friendship
-    #Potrebna je optimzacija
     @staticmethod
     def get_friends_ids(user_id):
-        friends1= mongo.db.friendships.find({"user_id":user_id})
-        friends2= mongo.db.friendships.find({"friend_id":user_id})
+        friends1= mongo.db.friendships.find({"user_id":user_id, "status": "Accepted"})
+        friends2= mongo.db.friendships.find({"friend_id":user_id, "status": "Accepted"})
         friends_ids=[]
         if friends1:
             for friend in friends1:
@@ -69,5 +69,5 @@ class FriendshipRepository:
     @staticmethod
     def delete_friendship(friendship_id):
         result= mongo.db.friendships.delete_one({"_id":ObjectId(friendship_id)})
-        return result.delete_count > 0
+        return result.acknowledged
     

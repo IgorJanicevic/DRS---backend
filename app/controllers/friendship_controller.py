@@ -19,6 +19,10 @@ def update_friendship(friendship_id):
 def accept_friendship(friendship_id):
     return FriendshipService.update_friendship(friendship_id, {"status": "Accepted"})
 
+@friendship_routes.route('/<friendship_id>/cancel', methods=['PUT'])
+def cancel_friendship(friendship_id):
+    return FriendshipService.delete_friendship(friendship_id)
+
 @friendship_routes.route('/<friendship_id>/reject', methods=['PUT'])
 def reject_friendship(friendship_id):
     return FriendshipService.update_friendship(friendship_id, {"status": "Rejected"})
@@ -27,6 +31,9 @@ def reject_friendship(friendship_id):
 def get_friends(user_id):
     return FriendshipService.get_all_friends_ids(user_id)
 
+@friendship_routes.route('/<user_id>/<friend_id>', methods=['GET'])
+def get_friendship_id(user_id, friend_id):
+    return FriendshipService.get_friendship_id(user_id, friend_id)
 
 @friendship_routes.route('/status/<user_id>/<friend_id>', methods=['GET'])
 def get_friend_status(user_id,friend_id):

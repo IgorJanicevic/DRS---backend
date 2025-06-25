@@ -37,7 +37,17 @@ class FriendshipService:
                 return None
         except:
             return {'message': 'Error with getting friends'},500
-        
+     
+    @staticmethod
+    def get_friendship_id(user_id, friend_id):
+        try:
+            result = FriendshipRepository.does_friendship_already_exist({'user_id': user_id, 'friend_id': friend_id})
+            if result:
+                return {"message":str(result['_id'])},200
+            else:
+                return None
+        except:
+            return None 
 
     @staticmethod
     def get_friendship_status(user_id,friend_id):
@@ -56,4 +66,16 @@ class FriendshipService:
         except:
             return 'Error'
 
+    @staticmethod
+    def delete_friendship(friendship_id):
+        try:
+            result = FriendshipRepository.delete_friendship(friendship_id)
+            print(result)
+            print("delete friendship")
+            if result:
+                return {"message": "Friendship deleted successfully"}, 200
+            else:
+                return {'message': 'Friendship not found'}, 404
+        except:
+            return {'message': 'Error with deleting friendship'}, 500
     

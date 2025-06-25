@@ -37,9 +37,11 @@ class PostService:
                 return {"message": 'Error with getting post by id'},500
         
     @staticmethod
-    def update_post(post_id,status,action=False):
+    def update_post(post_id,data,action=False):
         try:
-            result= PostRepository.update_post(post_id,status)
+            print(data['status'])
+            result= PostRepository.update_post(post_id,data)
+            print(result['status'])
             if result:
                 user = UserRepository.get_user_by_id(result['user_id'])
                 if action=='accept':
@@ -101,13 +103,12 @@ class PostService:
         except:
             return {'message','Error with getting posts'},500
             
-    #Potrebno je da se ovo optimizuje da se ne pokupe svi postovi svih prijatelja vec npr 10 po 10, da se ne bi opteretilo sve
-    #Zamsili da imas 700 prijatelja i da pokupis svaciji novi post
-    #Potrebno je da se pokupe novi postovi
+    #Pagination need to be done
     @staticmethod
     def get_friends_posts(user_id):
         try:
             friends_ids= FriendshipService.get_all_friends_ids(user_id)
+            print('friends_ids:',friends_ids)
 
             posts= PostService.get_friend_newest_post(user_id)
             
