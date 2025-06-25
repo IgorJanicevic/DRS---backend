@@ -33,6 +33,36 @@ class UserRepository:
             user_list.append(user)
 
         return user_list
+    
+    @staticmethod
+    def get_searched_users(query):
+        regex_default= {'$regex': f'^{query}', '$options': 'i'}
+        terms = query.strip().split()
+        and_conditions = []
+
+        for term in terms:
+            regex = {'$regex': f'^{term}', '$options': 'i'}
+            and_conditions.append({
+                '$or': [
+                    {'username': regex_default},
+                    {'email': regex_default},
+                    {'first_name': regex},
+                    {'last_name': regex},
+                    {'city': regex_default},
+                    {'country': regex_default},
+                    {'address': regex_default},
+                ]
+            })
+
+        users = mongo.db.users.find({'$and': and_conditions})
+
+        user_list = []
+        for user in users:
+            user['_id'] = str(user['_id'])
+            user_list.append(user)
+
+        return user_list
+
 
     @staticmethod
     def create_user(data):
@@ -109,13 +139,10 @@ class UserRepository:
     from pymongo import MongoClient
 
     def search_users(query):
-        # Dohvati sve korisnike
-        users = UserRepository.get_all_users()
-        
-        # Filtriraj korisnike koji sadrže 'query' u svom username-u
-        filtered_users = [user for user in users if query.lower() in user.get("username", "").lower()]
-        
-        return filtered_users
+        users = UserRepository.get_searched_users(query)
+        print(f"Found {len(users)} users matching query '{query}'")
+    
+        return users
     
     @staticmethod
     def get_users_by_city(city, limit, exclude_ids, user_id):
