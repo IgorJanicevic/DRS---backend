@@ -1,5 +1,6 @@
 from repositories.user_repository import UserRepository
 from services.friendship_service import FriendshipService
+from services.blocked_user_service import BlockedUserService 
 from utils.email_utils import send_registration_email, send_first_login_email
 from werkzeug.security import generate_password_hash,check_password_hash
 from utils.jwttoken import generate_token,verify_token
@@ -66,27 +67,31 @@ class UserService:
     def login_user(data):
         user = UserRepository.get_user_by_username(data['username'])
         if not user:
-            return {'message':"Invalid credentials"},401
-        
+            return {'message': "Invalid credentials"}, 401
+
         try:
             password_correct = check_password_hash(user['password'], data['password'])
-            if not user or not password_correct:
-    
-                return {'message': "Invalid credentials."},401        
+            if not password_correct:
+                return {'message': "Invalid credentials."}, 401
 
-            if user['first_login']:
-                admin_email= Config.ADMIN_EMAIL
-                send_first_login_email(admin_email,user['username'])
-                user['first_login']=False
+            if BlockedUserService.is_user_blocked(user['_id']):
+                return {'message': "Your account is blocked due to multiple rejected posts."}, 403
 
+            # Prva prijava
+            if user.get('first_login'):
+                admin_email = Config.ADMIN_EMAIL
+                send_first_login_email(admin_email, user['username'])
+                user['first_login'] = False
                 UserRepository.first_login_completed(user['_id'])
-                            
+
         except Exception as e:
-            return {"message": "Error with loggin in."}, 500
+            return {"message": "Error with logging in."}, 500
+
+        # Generisanje tokena
+        token = generate_token(user['_id'], user['role']) 
+        return {'token': token}, 200
+
         
-        token = generate_token(user['_id'],user['role']) 
-        return {'token': token}, 200 
-    
     
     def update_profile(user_id, data):
         token = request.headers.get('Authorization')

@@ -74,3 +74,13 @@ class PostRepository:
         else:
             data['_id']= str(data['_id'])
         return data
+    
+    @staticmethod
+    def get_rejected_posts_count_by_user(user_id):
+        posts_cursor = mongo.db.posts.find({"user_id": str(user_id),  "status":'Rejected'})
+        posts = []
+        for post in posts_cursor:
+            if post['user_id']==user_id:
+                post['_id'] = str(post['_id'])
+                posts.append(post)
+        return len(posts)

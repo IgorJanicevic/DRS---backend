@@ -2,6 +2,7 @@ from repositories.post_repository import PostRepository
 from services.friendship_service import FriendshipService
 from services.notification_service import NotificationService
 from repositories.user_repository import UserRepository
+from services.blocked_user_service import BlockedUserService
 from utils.email_utils import send_post_created_email, send_post_accepted_email,send_post_rejected_email
 from extensions import socketio
 
@@ -39,16 +40,21 @@ class PostService:
     @staticmethod
     def update_post(post_id,data,action=False):
         try:
-            print(data['status'])
             result= PostRepository.update_post(post_id,data)
-            print(result['status'])
             if result:
                 user = UserRepository.get_user_by_id(result['user_id'])
                 if action=='accept':
                     send_post_accepted_email(user['email'],result)
                 elif action=='reject':
-                    send_post_rejected_email(user['email'],result)
+                    print(f"Sending rejection email..")
+                    send_post_rejected_email(user['email'], result)
                     NotificationService.create_notification_for_rejected_post(post_id)
+
+                    count = PostRepository.get_rejected_posts_count_by_user(user['_id'])
+                    if count >= 3:
+                        BlockedUserService.block_user_if_not_blocked(user['_id'])
+
+
                     
                     # socketio.to(connected_users[str(user['_id'])]).emit('notification', {
                     #     'user_id': user['_id'],
@@ -62,7 +68,6 @@ class PostService:
                     #     }
                     # })
           
-                    ##Zabeleziti za korisnika da mu je odbijena objava ++
                 return result,200
             else:
                 return {'message': 'Status cannot be chagned, post not found'},404

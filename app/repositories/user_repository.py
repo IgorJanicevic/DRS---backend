@@ -87,11 +87,10 @@ class UserRepository:
 
     @staticmethod
     def update_user(user_id, data):
-        # Pronađi korisnika po ID-u
         user = UserRepository.get_user_by_id(user_id)
         
         if not user:
-            return None  # Korisnik ne postoji
+            return None
 
         if '_id' in data:
             del data['_id']
@@ -103,10 +102,10 @@ class UserRepository:
 
         if result.modified_count > 0:
             updated_user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
-            updated_user['_id'] = str(updated_user['_id'])  # Pretvori ObjectId u string
+            updated_user['_id'] = str(updated_user['_id']) 
             return updated_user
         else:
-            user['_id'] = str(user['_id'])  # Pretvori ObjectId u string
+            user['_id'] = str(user['_id'])
             return user
 
     
@@ -148,11 +147,9 @@ class UserRepository:
     def get_users_by_city(city, limit, exclude_ids, user_id):
         query = {"city": city}
 
-        # Dodaj izuzete ID-e u query
         if exclude_ids:
             query["_id"] = {"$nin": [ObjectId(id_) for id_ in exclude_ids]}
 
-        # Izuzmi trenutnog korisnika
         if user_id:
             if "_id" in query:
                 query["_id"]["$nin"].append(ObjectId(user_id))
@@ -161,7 +158,6 @@ class UserRepository:
 
         users = mongo.db.users.find(query).limit(limit)
 
-        # Konvertuj ObjectId u string
         user_list = []
         for user in users:
             user['_id'] = str(user['_id'])
@@ -176,7 +172,6 @@ class UserRepository:
             {"$sample": {"size": limit}},
         ])
 
-        # Konvertuj ObjectId u string i sakrij lozinku
         user_list = []
         for user in users:
             user['_id'] = str(user['_id'])

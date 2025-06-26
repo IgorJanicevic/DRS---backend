@@ -32,7 +32,7 @@ def send_post_created_email(administrator_email, post, username):
         return {"message": "Email sent successfully to administrator!"}, 200
     except Exception as e:
         return {"message": f"Failed to send email: {str(e)}"}, 500
-    
+
 def send_post_accepted_email(user_email, post):
     try:
         # Kreiraj naslov i telo emaila
@@ -63,8 +63,6 @@ def send_post_accepted_email(user_email, post):
     except Exception as e:
         return {"message": f"Failed to send email: {str(e)}"}, 500
 
-
-
 def send_post_rejected_email(user_email, post):
     try:
         # Kreiraj naslov i telo emaila
@@ -94,7 +92,6 @@ def send_post_rejected_email(user_email, post):
         return {"message": "Post rejected email sent successfully!"}, 200
     except Exception as e:
         return {"message": f"Failed to send email: {str(e)}"}, 500
-
 
 def send_registration_email(user_email, username,password):
     html_body = f"""
@@ -267,12 +264,70 @@ def send_reset_email(user):
     
     mail.send(msg)
 
-# def verify_reset_token(token):
-#     try:
-#         payload = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-#         return payload['reset_password']
-#     except jwt.ExpiredSignatureError:
-#         return None
-#     except jwt.InvalidTokenError:
-#         return None
+def send_user_blocked_email(user_email, username):
+    html_body = f"""
+    <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f7fc;
+                    margin: 0;
+                    padding: 0;
+                }}
+                .email-container {{
+                    width: 100%;
+                    max-width: 600px;
+                    margin: 20px auto;
+                    background-color: #ffffff;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    padding: 20px;
+                }}
+                .header {{
+                    background-color: #dc2626;
+                    color: white;
+                    text-align: center;
+                    padding: 10px;
+                    border-radius: 8px 8px 0 0;
+                }}
+                .content {{
+                    padding: 20px;
+                    text-align: center;
+                    font-size: 16px;
+                    color: #333;
+                }}
+                .footer {{
+                    text-align: center;
+                    padding: 10px;
+                    background-color: #f4f7fc;
+                    font-size: 12px;
+                    color: #888;
+                    border-radius: 0 0 8px 8px;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="email-container">
+                <div class="header">
+                    <h2>Account Blocked Notification</h2>
+                </div>
+                <div class="content">
+                    <p>Dear {username},</p>
+                    <p>We regret to inform you that your account has been <strong>temporarily blocked</strong> due to multiple post rejections.</p>
+                    <p>If you believe this was a mistake or wish to appeal, please contact our support team.</p>
+                </div>
+                <div class="footer">
+                    <p>Best regards,<br>The DSMT Team</p>
+                    <p>If you did not perform these actions, please contact us immediately.</p>
+                </div>
+            </div>
+        </body>
+    </html>
+    """
 
+    msg = Message('Your Account Has Been Blocked',
+                  sender='igorjanicevic33@gmail.com',
+                  recipients=[user_email])
+    msg.html = html_body
+    mail.send(msg)
