@@ -2,32 +2,36 @@ from flask_mail import Message
 from app import mail
 from utils.jwttoken import generate_reset_token
 
-def send_post_created_email(administrator_email, post, username):
+def send_post_created_email(email, post, username):
     try:
-        # Kreiraj naslov i telo emaila
         subject = f"New Post Created by {username}!"
-        body = f"""
-        Hello Administrator,
-
-        A new post has been created by the user: {username}.
-        
-        Here are the details of the post:
-        - Description: {post.get('description', 'No description')}
-        - Created At: {post.get('timestamp', 'Unknown time')}
-        - Status: {post.get('status', 'Unknown status')}
-        
-        Please review the post as necessary.
-        
-        Best regards,
-        Your Platform Team
+        html_body = f"""
+        <html>
+            <body style=\"font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;\">
+                <div style=\"max-width: 600px; margin: auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);\">
+                    <div style=\"background-color: #4f46e5; color: white; padding: 20px; text-align: center;\">
+                        <h2>New Post Created</h2>
+                    </div>
+                    <div style=\"padding: 20px; color: #333;\">
+                        <p>User <strong>{username}</strong> has created a new post.</p>
+                        <ul>
+                            <li><strong>Description:</strong> {post.get('description', 'No description')}</li>
+                            <li><strong>Created At:</strong> {post.get('timestamp', 'Unknown time')}</li>
+                            <li><strong>Status:</strong> {post.get('status', 'Unknown status')}</li>
+                        </ul>
+                        <p>Please review it at your earliest convenience.</p>
+                    </div>
+                    <div style=\"background: #f1f5f9; text-align: center; padding: 12px; font-size: 13px; color: #777;\">
+                        <p>Best regards, <br/> The DSMT Team</p>
+                    </div>
+                </div>
+            </body>
+        </html>
         """
-        # Kreiraj poruku
         msg = Message(subject=subject,
-                      sender="igorjanicevic33@gmail.com",  # Tvoja email adresa
-                      recipients=[administrator_email],
-                      body=body)
-
-        # Pošalji email
+                      sender="igorjanicevic33@gmail.com",
+                      recipients=[email])
+        msg.html = html_body
         mail.send(msg)
         return {"message": "Email sent successfully to administrator!"}, 200
     except Exception as e:
@@ -35,29 +39,34 @@ def send_post_created_email(administrator_email, post, username):
 
 def send_post_accepted_email(user_email, post):
     try:
-        # Kreiraj naslov i telo emaila
         subject = "Your Post Has Been Accepted!"
-        body = f"""
-        Hi there,
-
-        Your post has been successfully accepted! Here are the details:
-        
-        - Description: {post.get('description', 'No description')}
-        - Created At: {post.get('timestamp', 'Unknown time')}
-        - Status: {post.get('status', 'Accepted')}
-        
-        Thank you for your contribution.
-
-        Best regards,
-        The Team
+        html_body = f"""
+        <html>
+            <body style=\"font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;\">
+                <div style=\"max-width: 600px; margin: auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);\">
+                    <div style=\"background-color: #16a34a; color: white; padding: 20px; text-align: center;\">
+                        <h2>Post Accepted</h2>
+                    </div>
+                    <div style=\"padding: 20px; color: #333;\">
+                        <p>Good news! Your post has been accepted.</p>
+                        <ul>
+                            <li><strong>Description:</strong> {post.get('description', 'No description')}</li>
+                            <li><strong>Created At:</strong> {post.get('timestamp', 'Unknown time')}</li>
+                            <li><strong>Status:</strong> {post.get('status', 'Accepted')}</li>
+                        </ul>
+                        <p>Thank you for contributing!</p>
+                    </div>
+                    <div style=\"background: #f1f5f9; text-align: center; padding: 12px; font-size: 13px; color: #777;\">
+                        <p>Best regards, <br/> The DSMT Team</p>
+                    </div>
+                </div>
+            </body>
+        </html>
         """
-        # Kreiraj poruku
         msg = Message(subject=subject,
-                      sender="igorjanicevic33@gmail.com",  # Tvoja email adresa
-                      recipients=[user_email],
-                      body=body)
-
-        # Pošaljite email
+                      sender="igorjanicevic33@gmail.com",
+                      recipients=[user_email])
+        msg.html = html_body
         mail.send(msg)
         return {"message": "Post accepted email sent successfully!"}, 200
     except Exception as e:
@@ -65,7 +74,39 @@ def send_post_accepted_email(user_email, post):
 
 def send_post_rejected_email(user_email, post):
     try:
-        # Kreiraj naslov i telo emaila
+        subject = "Your Post Has Been Rejected"
+        html_body = f"""
+        <html>
+            <body style=\"font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;\">
+                <div style=\"max-width: 600px; margin: auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);\">
+                    <div style=\"background-color: #dc2626; color: white; padding: 20px; text-align: center;\">
+                        <h2>Post Rejected</h2>
+                    </div>
+                    <div style=\"padding: 20px; color: #333;\">
+                        <p>Unfortunately, your post has been rejected.</p>
+                        <ul>
+                            <li><strong>Description:</strong> {post.get('description', 'No description')}</li>
+                            <li><strong>Created At:</strong> {post.get('timestamp', 'Unknown time')}</li>
+                            <li><strong>Status:</strong> {post.get('status', 'Rejected')}</li>
+                        </ul>
+                        <p>If you have any questions, feel free to reach out to our support team.</p>
+                    </div>
+                    <div style=\"background: #f1f5f9; text-align: center; padding: 12px; font-size: 13px; color: #777;\">
+                        <p>Best regards, <br/> The DSMT Team</p>
+                    </div>
+                </div>
+            </body>
+        </html>
+        """
+        msg = Message(subject=subject,
+                      sender="igorjanicevic33@gmail.com",
+                      recipients=[user_email])
+        msg.html = html_body
+        mail.send(msg)
+        return {"message": "Post rejected email sent successfully!"}, 200
+    except Exception as e:
+        return {"message": f"Failed to send email: {str(e)}"}, 500
+    try:
         subject = "Your Post Has Been Rejected"
         body = f"""
         Hi there,
@@ -81,13 +122,11 @@ def send_post_rejected_email(user_email, post):
         Best regards,
         The Team
         """
-        # Kreiraj poruku
         msg = Message(subject=subject,
-                      sender="igorjanicevic33@gmail.com",  # Tvoja email adresa
+                      sender="igorjanicevic33@gmail.com", 
                       recipients=[user_email],
                       body=body)
 
-        # Pošaljite email
         mail.send(msg)
         return {"message": "Post rejected email sent successfully!"}, 200
     except Exception as e:

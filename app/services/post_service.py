@@ -5,6 +5,7 @@ from repositories.user_repository import UserRepository
 from services.blocked_user_service import BlockedUserService
 from utils.email_utils import send_post_created_email, send_post_accepted_email,send_post_rejected_email
 from extensions import socketio
+from config.config import Config
 
 
 
@@ -16,7 +17,7 @@ class PostService:
         data['username'] = user['username']
         post = PostRepository.create_post(data)
         if post:
-            # send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
+            send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
 
             post['timestamp'] = post['timestamp'].isoformat()
             socketio.emit('new_post', post)
@@ -53,8 +54,6 @@ class PostService:
                     count = PostRepository.get_rejected_posts_count_by_user(user['_id'])
                     if count >= 3:
                         BlockedUserService.block_user_if_not_blocked(user['_id'])
-
-
                     
                     # socketio.to(connected_users[str(user['_id'])]).emit('notification', {
                     #     'user_id': user['_id'],

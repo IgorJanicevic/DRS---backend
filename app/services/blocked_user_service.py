@@ -2,7 +2,6 @@ from repositories.blocked_user_repository import BlockedUserRepository
 from repositories.user_repository import UserRepository
 from utils.email_utils import send_user_blocked_email
 
-
 class BlockedUserService:
 
     @staticmethod
@@ -37,3 +36,25 @@ class BlockedUserService:
         except Exception as e:
             print(f"Error checking if user {user_id} is blocked: {e}")
             return False
+    @staticmethod
+    def get_all_blocked_users():
+        try:
+            userIds = BlockedUserRepository.get_all_blocked_users()
+            users = UserRepository.get_users_by_ids(userIds)
+            print(f"Blocked users: {users}")
+            if not users:
+                return {"status": 404, "message": "No blocked users found."}
+            return {"status": 200, "data": users}
+        except Exception as e:
+            return {"status": 500, "message": f"Error fetching blocked users: {str(e)}"}
+
+    @staticmethod
+    def unblock_user(user_id):
+        try:
+            result = BlockedUserRepository.unblock_user(user_id)
+            if result.deleted_count > 0:
+                return {"status": 200, "message": f"User {user_id} unblocked successfully."}
+            else:
+                return {"status": 404, "message": f"User {user_id} not found in blocked list."}
+        except Exception as e:
+            return {"status": 500, "message": f"Error unblocking user: {str(e)}"}
