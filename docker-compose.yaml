@@ -7,3 +7,6 @@ services:
       - MONGO_URI=mongodb+srv://EuroHoopAdmin:stby9ZGGGqahFyZz@igorcluster.loyvk.mongodb.net/EuroHoopDb
     command: gunicorn --worker-class eventlet -w 4 -b 0.0.0.0:5000 run:app
     restart: always
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4

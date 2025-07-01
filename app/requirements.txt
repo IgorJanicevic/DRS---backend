@@ -4,7 +4,6 @@ flask_mail==0.10.0
 Flask-PyMongo==2.3.0
 Flask-SocketIO==5.3.1
 PyJWT==2.10.1
-pymongo==4.13.2
 requests==2.32.4
 SQLAlchemy==2.0.36
 Werkzeug==2.2.3
@@ -12,4 +11,6 @@ Flask-Session==0.4.0
 Flask-Login==0.6.2
 alembic==1.14.0
 gunicorn==21.2.0
-eventlet==0.33.3
+eventlet==0.35.2
+dnspython==2.6.1
+pymongo==4.6.2
