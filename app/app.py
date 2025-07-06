@@ -6,7 +6,10 @@ from extensions import mongo, mail, session, socketio
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, origins=[
+        "http://localhost:3000",
+        "https://drs-frontend.vercel.app"
+    ], supports_credentials=True)
     app.config.from_object(Config)
 
     mongo.init_app(app)
