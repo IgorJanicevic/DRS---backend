@@ -4,9 +4,8 @@ from services.notification_service import NotificationService
 from repositories.user_repository import UserRepository
 from services.blocked_user_service import BlockedUserService
 from utils.email_utils import send_post_created_email, send_post_accepted_email,send_post_rejected_email
-from extensions import socketio
 from config.config import Config
-
+from extensions import socketio
 
 
 class PostService:
@@ -17,9 +16,8 @@ class PostService:
         data['username'] = user['username']
         post = PostRepository.create_post(data)
         if post:
-            send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
-
             post['timestamp'] = post['timestamp'].isoformat()
+            send_post_created_email(Config.ADMIN_EMAIL,post,user['username'])
             socketio.emit('new_post', post)
             print(f'Post successfully sent to admin') 
             
@@ -42,6 +40,10 @@ class PostService:
     def update_post(post_id,data,action=False):
         try:
             result= PostRepository.update_post(post_id,data)
+            if result['status'] == 'Pending':
+                result['timestamp'] = result['timestamp'].isoformat()
+                print(f"Post with ID {post_id}, no email sent.")
+                socketio.emit('new_post', result)
             if result:
                 user = UserRepository.get_user_by_id(result['user_id'])
                 if action=='accept':
@@ -54,18 +56,6 @@ class PostService:
                     count = PostRepository.get_rejected_posts_count_by_user(user['_id'])
                     if count >= 3:
                         BlockedUserService.block_user_if_not_blocked(user['_id'])
-                    
-                    # socketio.to(connected_users[str(user['_id'])]).emit('notification', {
-                    #     'user_id': user['_id'],
-                    #     'type': 'post_rejected',
-                    #     'message': f"Objava sa ID {post_id} je odbijena",
-                    #     'status': 'Rejected',
-                    #     'created_at': datetime.utcnow().isoformat(), 
-                    #     'metadata': {
-                    #         'post_id': post_id,
-                    #         'additional_info': 'Ova objava je odbijena iz razloga X'
-                    #     }
-                    # })
           
                 return result,200
             else:

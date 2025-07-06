@@ -70,7 +70,6 @@ class FriendshipService:
     def delete_friendship(friendship_id):
         try:
             result = FriendshipRepository.delete_friendship(friendship_id)
-            print(result)
             print("delete friendship")
             if result:
                 return {"message": "Friendship deleted successfully"}, 200

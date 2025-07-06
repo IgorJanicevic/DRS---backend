@@ -10,6 +10,26 @@ class UserRepository:
         return user
 
     @staticmethod
+    def get_users_by_ids(user_objs):
+        object_ids = [
+            obj["user_id"] if isinstance(obj["user_id"], ObjectId) else ObjectId(obj["user_id"])
+            for obj in user_objs
+            if "user_id" in obj and ObjectId.is_valid(str(obj["user_id"]))
+        ]
+
+        users = mongo.db.users.find({"_id": {"$in": object_ids}})
+
+        user_list = []
+        for user in users:
+            user['_id'] = str(user['_id'])
+            if 'password' in user:
+                del user['password']
+            user_list.append(user)
+
+        return user_list
+
+
+    @staticmethod
     def get_user_by_username(username):
         user = mongo.db.users.find_one({"username": username})
         if user:
@@ -139,8 +159,7 @@ class UserRepository:
 
     def search_users(query):
         users = UserRepository.get_searched_users(query)
-        print(f"Found {len(users)} users matching query '{query}'")
-    
+            
         return users
     
     @staticmethod

@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   backend:
     build: ./app
@@ -5,8 +7,16 @@ services:
       - "5000:5000"
     environment:
       - MONGO_URI=mongodb+srv://EuroHoopAdmin:stby9ZGGGqahFyZz@igorcluster.loyvk.mongodb.net/EuroHoopDb
-    command: gunicorn --worker-class eventlet -w 4 -b 0.0.0.0:5000 run:app
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
     restart: always
     dns:
       - 8.8.8.8
       - 8.8.4.4
+    command: gunicorn -k eventlet -w 1 -b 0.0.0.0:5000 --log-level=debug --access-logfile=- --error-logfile=- run:app
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"

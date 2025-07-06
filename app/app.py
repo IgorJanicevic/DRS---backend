@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+from socket_handler import register_socket_events
 from config.config import Config
 from extensions import mongo, mail, session, socketio
 
@@ -13,7 +14,7 @@ def create_app():
     session.init_app(app)
     socketio.init_app(app)
 
-    print(mongo.cx)
+    register_socket_events(socketio)
 
     from controllers.user_controller import user_routes
     from controllers.post_controller import post_routes
@@ -25,5 +26,6 @@ def create_app():
     app.register_blueprint(friendship_routes, url_prefix='/friendship')
     app.register_blueprint(notification_routes, url_prefix='/notification')
     app.register_blueprint(blocked_user_routes, url_prefix='/blocked-users')
+
 
     return app

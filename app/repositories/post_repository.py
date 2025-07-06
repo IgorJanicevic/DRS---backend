@@ -34,13 +34,16 @@ class PostRepository:
     
     @staticmethod
     def get_pending_posts():
-        posts_curosor = mongo.db.posts.find({"status":"Pending"}).sort('timestamp',-1)
+        posts_cursor = mongo.db.posts.find({"status": "Pending"}).sort('timestamp', -1)
         posts = []
-        for post in posts_curosor:
+        for post in posts_cursor:
             post['_id'] = str(post['_id'])
+            if 'timestamp' in post and isinstance(post['timestamp'], datetime):
+                post['timestamp'] = post['timestamp'].isoformat()
             posts.append(post)
 
         return posts
+
     
 
     @staticmethod

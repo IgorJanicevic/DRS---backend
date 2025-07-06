@@ -1,10 +1,12 @@
 from flask import Blueprint,request
 from services.post_service import PostService
+from datetime import datetime
 
 post_routes = Blueprint('post_routes',__name__)
 
 @post_routes.route('/create',methods=['POST'])
 def create():
+    print("Creating post...")
     data = request.get_json()
     ret_val=  PostService.create_post(data)
     return ret_val
@@ -12,6 +14,7 @@ def create():
 @post_routes.route('/<post_id>',methods=['PUT'])
 def update(post_id):
     data = request.get_json()
+    data['timestamp'] = datetime.now()
     return PostService.update_post(post_id,data,'update')
 
 @post_routes.route('/accept/<post_id>',methods=['PUT'])

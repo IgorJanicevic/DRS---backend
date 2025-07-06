@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["gunicorn", "-k", "eventlet", "-w", "1", "-b", "0.0.0.0:5000", "run:app"]
+CMD ["gunicorn", "-k", "eventlet", "-w", "1", "-b", "0.0.0.0:5000", "--log-level=debug", "--access-logfile=-", "--error-logfile=-", "run:app"]

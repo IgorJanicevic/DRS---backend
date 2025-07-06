@@ -41,7 +41,6 @@ class BlockedUserService:
         try:
             userIds = BlockedUserRepository.get_all_blocked_users()
             users = UserRepository.get_users_by_ids(userIds)
-            print(f"Blocked users: {users}")
             if not users:
                 return {"status": 404, "message": "No blocked users found."}
             return {"status": 200, "data": users}
