@@ -30,9 +30,6 @@ def create_app():
     app.register_blueprint(notification_routes, url_prefix='/notification')
     app.register_blueprint(blocked_user_routes, url_prefix='/blocked-users')
 
-    CORS(app, origins=[
-        "http://localhost:3000",
-        "https://drs-frontend.vercel.app"
-    ], supports_credentials=True)
+    CORS(app, supports_credentials=True)	
 
     return app
