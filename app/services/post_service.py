@@ -97,13 +97,13 @@ class PostService:
         except:
             return {'message','Error with getting posts'},500
             
-    #Pagination need to be done
+
     @staticmethod
     def get_friends_posts(user_id):
         try:
             friends_ids= FriendshipService.get_all_friends_ids(user_id)
             print('friends_ids:',friends_ids)
-
+            
             posts= PostService.get_friend_newest_post(user_id)
             
             if posts == None and friends_ids ==None:
@@ -113,7 +113,9 @@ class PostService:
             
             for friend_id in friends_ids:
                 posts += PostService.get_friend_newest_post(friend_id)
-                return posts,200
+
+            posts.sort(key=lambda post: post.get('timestamp'), reverse=True)
+            return posts,200
         except:
             return {'message':'Error with getting friends posts'},500
     

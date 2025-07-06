@@ -87,3 +87,25 @@ class PostRepository:
                 post['_id'] = str(post['_id'])
                 posts.append(post)
         return len(posts)
+
+    @staticmethod
+    def get_posts_by_user_ids(user_ids):
+        object_ids = [ObjectId(uid) if isinstance(uid, str) else uid for uid in user_ids]
+        print(f"Object IDs: {object_ids}")
+
+        posts = mongo.db.posts.find({"user_id": {"$in": object_ids}})
+        print(f"Found {posts.count()} posts for user IDs: {user_ids}")
+        post_list = []
+        for post in posts:
+            post['_id'] = str(post['_id'])
+            post['user_id'] = str(post['user_id'])
+
+            if 'timestamp' in post and isinstance(post['timestamp'], str):
+                try:
+                    post['timestamp'] = datetime.fromisoformat(post['timestamp'])
+                except:
+                    pass
+
+            post_list.append(post)
+
+        return post_list

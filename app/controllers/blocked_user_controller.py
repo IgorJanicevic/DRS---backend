@@ -3,7 +3,7 @@ from services.blocked_user_service import BlockedUserService
 
 blocked_user_routes = Blueprint('blocked_user_routes', __name__)
 
-@blocked_user_routes.route('/', methods=['GET'])
+@blocked_user_routes.route('/users', methods=['GET'])
 def get_all_blocked_users():
     result=  BlockedUserService.get_all_blocked_users()
     return jsonify(result)

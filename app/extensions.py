@@ -8,7 +8,7 @@ mongo = PyMongo()
 mail = Mail()
 session = Session()
 
-redis_url = os.getenv("REDIS_URL", "redis://redis:6379/0")
+redis_url = os.getenv("REDIS_URL", "redis://default:6f0tJ3hSpWdpvhusFC6haVDYBqTgvtEE@redis-17861.c245.us-east-1-3.ec2.redns.redis-cloud.com:17861")
 
 socketio = SocketIO(
     cors_allowed_origins="*",
