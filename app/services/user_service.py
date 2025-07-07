@@ -111,6 +111,14 @@ class UserService:
         if 'password' in data:
             data['password'] = generate_password_hash(data['password'])
 
+        user = UserRepository.get_user_by_username(data['username'])
+        if user and str(user['_id']) != str(user_id):
+            return {"message": "Username already exists."}, 403
+        
+        user = UserRepository.get_user_by_email(data['email'])
+        if user and str(user['_id']) != str(user_id):
+            return {"message": "Email already exists."}, 403
+
         updated_user = UserRepository.update_user(user_id, data)
 
         if updated_user:
